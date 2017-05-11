@@ -1,8 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -14,20 +19,27 @@
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vuG-eD-zaO">
-                                <rect key="frame" x="285" y="554" width="30" height="30"/>
+                                <rect key="frame" x="135.5" y="607" width="104" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="104" id="ZW9-KX-S2t"/>
+                                    <constraint firstAttribute="height" constant="44" id="dLW-4D-J5Y"/>
+                                </constraints>
                                 <state key="normal" title="play">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="play:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="0rX-PM-TPy"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FPS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Cf-bK-cno">
-                                <rect key="frame" x="552" y="559" width="32" height="20.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="FPS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Cf-bK-cno">
+                                <rect key="frame" x="552" y="559" width="32" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="32" id="Db5-XD-kOG"/>
                                 </constraints>
@@ -37,33 +49,34 @@
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="teS-j0-jPQ">
                                 <rect key="frame" x="22" y="554" width="34" height="20.5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VpF-Js-YFa">
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VpF-Js-YFa">
                                 <rect key="frame" x="16" y="555" width="70" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="jjG-6y-dRE"/>
                                     <constraint firstAttribute="height" constant="30" id="xl5-Rf-6q0"/>
                                 </constraints>
                                 <state key="normal" title="showTime">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="showTime:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="6Qd-Jl-m6h"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rtF-Bl-Y6w">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="532"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="507"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                             </imageView>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IXP-kF-WZ3">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="532"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="585"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="IXP-kF-WZ3" secondAttribute="trailing" id="0Jy-2P-GJS"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="vuG-eD-zaO" secondAttribute="bottom" constant="16" id="BZ3-Hh-BhA"/>
@@ -73,7 +86,7 @@
                             <constraint firstItem="rtF-Bl-Y6w" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="OdK-gw-hRa"/>
                             <constraint firstItem="vuG-eD-zaO" firstAttribute="top" secondItem="IXP-kF-WZ3" secondAttribute="bottom" constant="22" id="PW5-O3-p8o"/>
                             <constraint firstItem="IXP-kF-WZ3" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="Qm8-gf-jOm"/>
-                            <constraint firstItem="vuG-eD-zaO" firstAttribute="top" secondItem="rtF-Bl-Y6w" secondAttribute="bottom" constant="22" id="YIt-W8-OSd"/>
+                            <constraint firstItem="vuG-eD-zaO" firstAttribute="top" secondItem="rtF-Bl-Y6w" secondAttribute="bottom" constant="100" id="YIt-W8-OSd"/>
                             <constraint firstItem="IXP-kF-WZ3" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="nW5-7d-VbT"/>
                             <constraint firstItem="VpF-Js-YFa" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="oyz-8P-iZf"/>
                             <constraint firstAttribute="centerX" secondItem="vuG-eD-zaO" secondAttribute="centerX" id="tGk-Ub-Lfd"/>
@@ -96,7 +109,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="342" y="362"/>
+            <point key="canvasLocation" x="341.60000000000002" y="361.16941529235385"/>
         </scene>
     </scenes>
 </document>

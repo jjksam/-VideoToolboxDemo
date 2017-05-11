@@ -14,6 +14,7 @@
 @interface ViewController ()
 {
     int tmp;
+    AAPLEAGLLayer *_layer;
 }
 
 @property CADisplayLink *displayLink;
@@ -34,8 +35,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-//    self.video = [[SuperVideoFrameExtractor alloc] initWithVideo:[Utilities bundlePath:@"1080p30FPS.mp4"]];
-    self.video = [[SuperVideoFrameExtractor alloc] initWithVideo:@"rtsp://192.168.2.73:1935/vod/sample.mp4" usesTcp:NO];
+    self.video = [[SuperVideoFrameExtractor alloc] initWithVideo:@"http://www.example.com/live/live.flv" usesTcp:YES];
     self.video.delegate = self;
     tmp = 0;
     self.outputFrames = [NSMutableArray new];
@@ -45,15 +45,9 @@
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkCallback:)];
     [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [self.displayLink setPaused:YES];
+    self.displayLink.preferredFramesPerSecond = 30;
     self.bufferSemaphore = dispatch_semaphore_create(0);
-    
-    // set output image size
-//    self.video.outputWidth = 426;
-//    self.video.outputHeight = 320;
-    
-//    self.video.outputWidth = 1920;
-//    self.video.outputHeight = 1080;
-    
+
     // print some info about the video
     NSLog(@"video duration: %f",self.video.duration);
     NSLog(@"video size: %d x %d", self.video.sourceWidth, self.video.sourceHeight);
@@ -86,7 +80,7 @@
     
     
 //    lastFrameTime = -1;
-//    
+//
 //    // seek to 0.0 seconds
 //    [self.video seekTime:0.0];
 //
@@ -181,15 +175,16 @@
     
     CVPixelBufferUnlockBaseAddress(buffer, 0);
     
-    //    NSString *fileName = [Utilities documentsPath:[NSString stringWithFormat:@"image%i.png",tmp]];
-    //    tmp ++;
-    //    [UIImagePNGRepresentation(image) writeToFile:fileName atomically:YES];
-    //    NSError *error;
-    //    NSFileManager *fileMgr = [NSFileManager defaultManager];
-    //    NSLog(@"Documents directory: %@", [fileMgr contentsOfDirectoryAtPath:fileName error:&error]);
-    
-    //成功轉換成 UIImage
-    //    self.imageView.image = [UIImage imageNamed:@"image3"];
+#if DEBUG
+    // Create path.
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+//
+//    // Save image.
+//    [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+//    [self.imageView setImage:[UIImage imageWithContentsOfFile:filePath]];
+//    return;
+#endif
     [self.imageView setImage:image];
 }
 
@@ -287,22 +282,23 @@
         width /= 2;
         height /= 2;
     }
-    
-    AAPLEAGLLayer *layer = [[AAPLEAGLLayer alloc] init];
+    if (_layer == nil) {
+        _layer = [[AAPLEAGLLayer alloc] init];
 //    if (self.videoPreferredTransform.a == -1.0f) {
 //        [layer setAffineTransform:CGAffineTransformRotate(layer.affineTransform, (180.0f * M_PI) / 180.0f)];
 //    } else if (self.videoPreferredTransform.a == 0.0f){
 //        [layer setAffineTransform:CGAffineTransformRotate(layer.affineTransform, (90.0f * M_PI) / 180.0f)];
 //    }
-    [layer setFrame:CGRectMake(0.0f, self.view.frame.size.height - 50.0f - height, width, height)];
-    layer.presentationRect = CGSizeMake(width, height);
+        [_layer setFrame:CGRectMake(0.0f, self.view.frame.size.height - 50.0f - height, width, height)];
+        _layer.presentationRect = CGSizeMake(width, height);
     
 //    layer.timeCode = [NSString stringWithFormat:@"%.3f", [framePTS floatValue]];
-    [layer setupGL];
-    
-//    [self.view.layer addSublayer:layer];
-    [self.layerView.layer addSublayer:layer];
-    [layer displayPixelBuffer:imageBuffer];
+        [_layer setupGL];
+    }
+    if ([_layer superlayer] == nil) {
+        [self.imageView.layer addSublayer:_layer];
+    }
+    [_layer displayPixelBuffer:imageBuffer];
 }
 
 
@@ -320,13 +316,13 @@
     }
     
     self.imageView.image = self.video.currentImage;
-//    float frameTime = 1.0/([NSDate timeIntervalSinceReferenceDate]-startTime);
-//    if (lastFrameTime<0) {
-//        lastFrameTime = frameTime;
-//    } else {
-//        lastFrameTime = LERP(frameTime, lastFrameTime, 0.8);
-//    }
-//    [self.FPSLabel setText:[NSString stringWithFormat:@"%.0f",lastFrameTime]];
+    float frameTime = 1.0/([NSDate timeIntervalSinceReferenceDate]-startTime);
+    if (lastFrameTime<0) {
+        lastFrameTime = frameTime;
+    } else {
+        lastFrameTime = LERP(frameTime, lastFrameTime, 0.8);
+    }
+    [self.FPSLabel setText:[NSString stringWithFormat:@"%.0f",lastFrameTime]];
 }
 
 @end
