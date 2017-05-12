@@ -15,6 +15,7 @@
 #include "videotoolbox.h"
 
 #define RTSP_DUMP_DATA 1
+#define USE_FFMPEG_DECODE 0
 
 @interface SuperVideoFrameExtractor ()
 {
@@ -396,6 +397,10 @@ initError:
     return &_currentPacket;
 }
 
+- (void)startAudio {
+    [_audioController _startAudio];
+}
+
 - (void)closeAudio
 {
     [_audioController _stopAudio];
@@ -757,25 +762,25 @@ initError:
 {
     // AVPacket packet;
     int ret = 0; // success
-    
+    int frameFinished = 0;
     while (!ret && av_read_frame(pFormatCtx, &packet)>= 0) {
         // 確認packet 是否是屬於此video stream
         if (packet.stream_index == videoStream) {
             
 #warning  important: choose new iOS8 API start to decode
-#define USE_FFMPEG_DECODE 0
+
 #if USE_FFMPEG_DECODE
             // FFMPEG decode
+#if USE_NEW_API
             ret = avcodec_send_packet(pCodecCtx, &packet);
             if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
                 continue;
-//            if (ret == AVERROR(EAGAIN)) {
-                ret = avcodec_receive_frame(pCodecCtx, pFrame);
-                if (ret < 0 && ret != AVERROR_EOF)
-                    continue;
-//            }
+            ret = avcodec_receive_frame(pCodecCtx, pFrame);
+            if (ret < 0 && ret != AVERROR_EOF)
+                continue;
             // if ret == 0 ?
-//            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+#endif
+            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
             CGImageRef cgImageRef = [self imageFromAVPicture:picture width:outputWidth height:outputHeight].CGImage;
             if (cgImageRef != NULL) {
                 CVImageBufferRef pixelBuffer = [self pixelBufferFromCGImage:cgImageRef];
@@ -789,7 +794,7 @@ initError:
         }
     }
     
-    return ret != 0;
+    return frameFinished != 0;
 }
 
 

@@ -122,10 +122,11 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         {
             audioStreamBasicDesc_.mFormatID = kAudioFormatMPEG4AAC;
             audioStreamBasicDesc_.mFormatFlags = kMPEG4Object_AAC_LC;
-            audioStreamBasicDesc_.mSampleRate = 44100;
-            audioStreamBasicDesc_.mChannelsPerFrame = 2;
-            audioStreamBasicDesc_.mBitsPerChannel = 0;
-            audioStreamBasicDesc_.mFramesPerPacket = 1024;
+            audioStreamBasicDesc_.mSampleRate = _audioCodecContext->sample_rate;
+            audioStreamBasicDesc_.mChannelsPerFrame = _audioCodecContext->channels;
+            audioStreamBasicDesc_.mBitsPerChannel = _audioCodecContext->bits_per_raw_sample;
+            audioStreamBasicDesc_.mBytesPerFrame = 0;
+            audioStreamBasicDesc_.mFramesPerPacket = _audioCodecContext->frame_size;
             audioStreamBasicDesc_.mBytesPerPacket = 0;
             NSLog(@"audio format %s (%d) is  supported",  _audioCodecContext->codec_descriptor->name, _audioCodecContext->codec_id);
             
@@ -267,7 +268,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                 
                 _streamer.audioPacketQueueSize -= packet->size;
                             
-                av_free_packet(packet);
+                av_free(packet);
             }
             else {
                 break;

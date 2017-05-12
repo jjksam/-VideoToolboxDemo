@@ -86,6 +86,7 @@
 -(void)seekTime:(double)seconds;
 
 - (AVPacket*)readPacket;
+- (void)startAudio;
 -(void)closeAudio;
 
 @property (nonatomic, retain) NSMutableArray *audioPacketQueue;

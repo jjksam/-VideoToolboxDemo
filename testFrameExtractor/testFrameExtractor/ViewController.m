@@ -71,8 +71,10 @@
     
     if (isPlaying == NO) {
         [self.displayLink setPaused:YES];
+        [self.video closeAudio];
     } else{
         [self.displayLink setPaused:NO];
+        [self.video startAudio];
         dispatch_async(self.backgroundQueue, ^{
             [self.video stepFrame];
         });
