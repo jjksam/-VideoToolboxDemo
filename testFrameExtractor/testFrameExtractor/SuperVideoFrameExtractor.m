@@ -528,8 +528,6 @@ initError:
 #if DEBUG
         NSData *tmp1 = [NSData dataWithBytes:data length:size];
         [self dumpData:tmp1];
-//        NSLog(@"size ---->>%i",size);
-//        NSLog(@"%@", tmp1);
 #endif
         
         if (!data || size <= 0)
@@ -572,6 +570,7 @@ initError:
                 }
                 p += nalsize;
             }
+//            return; // skip
             // Store right nal length size that will be used to parse all other nals
 //            *nal_length_size = (data[4] & 0x03) + 1;
         } else {
@@ -657,8 +656,16 @@ initError:
         timingInfo.presentationTimeStamp = CMTimeMake(0, timeSpan);
         timingInfo.duration =  CMTimeMake(3000, timeSpan);
         timingInfo.decodeTimeStamp = kCMTimeInvalid;
+        return; // skip
     }
     
+    uint8_t *data = pCodecCtx->extradata;
+    int size = pCodecCtx->extradata_size;
+#if DEBUG
+    NSLog(@"dump extradata");
+    NSData *tmp1 = [NSData dataWithBytes:data length:size];
+    [self dumpData:tmp1];
+#endif
 //    [self dumpData:[NSData dataWithBytesNoCopy:packet.data length:packet.size freeWhenDone:NO]];
     int nalu_type = 0;
     if (is_avc) {
@@ -745,7 +752,7 @@ initError:
     for (int i = 0; i< length; i++) {
         printf("%02x ", tmpData[i]);
         c++;
-        if (c > 20)
+        if (c >= 20)
         {
             c = 0;
             printf("\n");
