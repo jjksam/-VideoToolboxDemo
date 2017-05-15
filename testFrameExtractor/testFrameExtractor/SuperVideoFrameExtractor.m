@@ -702,17 +702,18 @@ initError:
             tmp3 = [tmp3 stringByAppendingString:str];
         }
         NSLog(@"size = %i , 16Byte = %@",removeHeaderSize,tmp3);
-
+        
         // 6. create a CMSampleBuffer.
         CMSampleBufferRef sbRef = NULL;
+        CMSampleTimingInfo timingInfo = {packet.duration, packet.pts, packet.dts};
 //        int32_t timeSpan = 90000;
 //        CMSampleTimingInfo timingInfo;
 //        timingInfo.presentationTimeStamp = CMTimeMake(0, timeSpan);
 //        timingInfo.duration =  CMTimeMake(3000, timeSpan);
 //        timingInfo.decodeTimeStamp = kCMTimeInvalid;
         const size_t sampleSizeArray[] = {packet.size};
-//        status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 1, &timingInfo, 1, sampleSizeArray, &sbRef);
-        status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 0, NULL, 1, sampleSizeArray, &sbRef);
+        status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 1, &timingInfo, 1, sampleSizeArray, &sbRef);
+//        status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 0, NULL, 1, sampleSizeArray, &sbRef);
 
         NSLog(@"SampleBufferCreate: %@", (status == noErr) ? @"successfully." : @"failed.");
         
