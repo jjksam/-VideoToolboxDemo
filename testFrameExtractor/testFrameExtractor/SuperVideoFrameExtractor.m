@@ -15,7 +15,8 @@
 #include "videotoolbox.h"
 
 #define RTSP_DUMP_DATA 1
-#define USE_FFMPEG_DECODE 0
+#define USE_NEW_API 0
+#define USE_FFMPEG_DECODE 1
 
 @interface SuperVideoFrameExtractor ()
 {
@@ -705,6 +706,8 @@ initError:
         
         // 6. create a CMSampleBuffer.
         CMSampleBufferRef sbRef = NULL;
+        AVRational timeBase = pFormatCtx->streams[videoStream]->time_base;
+        double currentTime =  packet.pts * (double)timeBase.num / timeBase.den;
         CMSampleTimingInfo timingInfo = {packet.duration, packet.pts, packet.dts};
 //        int32_t timeSpan = 90000;
 //        CMSampleTimingInfo timingInfo;
@@ -787,8 +790,9 @@ initError:
             if (ret < 0 && ret != AVERROR_EOF)
                 continue;
             // if ret == 0 ?
-#endif
+#else
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+#endif
             CGImageRef cgImageRef = [self imageFromAVPicture:picture width:outputWidth height:outputHeight].CGImage;
             if (cgImageRef != NULL) {
                 CVImageBufferRef pixelBuffer = [self pixelBufferFromCGImage:cgImageRef];
