@@ -122,7 +122,6 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
         {
             audioStreamBasicDesc_.mFormatID = kAudioFormatMPEG4AAC;
             audioStreamBasicDesc_.mFormatFlags = kMPEG4Object_AAC_LC;
-            audioStreamBasicDesc_.mSampleRate = _audioCodecContext->sample_rate;
             audioStreamBasicDesc_.mChannelsPerFrame = _audioCodecContext->channels;
             audioStreamBasicDesc_.mBitsPerChannel = _audioCodecContext->bits_per_raw_sample;
             audioStreamBasicDesc_.mBytesPerFrame = 0;
@@ -268,7 +267,7 @@ void audioQueueIsRunningCallback(void *inClientData, AudioQueueRef inAQ,
                 
                 _streamer.audioPacketQueueSize -= packet->size;
                             
-                av_free(packet);
+                av_packet_unref(packet);
             }
             else {
                 break;

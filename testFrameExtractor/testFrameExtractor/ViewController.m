@@ -71,7 +71,7 @@
     
     if (isPlaying == NO) {
         [self.displayLink setPaused:YES];
-//        [self.video closeAudio];
+        [self.video closeAudio];
     } else{
         [self.displayLink setPaused:NO];
 //        [self.video startAudio];
@@ -98,52 +98,6 @@
 {
     NSLog(@"current time: %f s",self.video.currentTime);
 }
-//
-//-(void) getDecodeImageData:(CVImageBufferRef) imageBuffer
-//{
-//    CVImageBufferRef buffer = imageBuffer;
-//    
-//    CVPixelBufferLockBaseAddress(buffer, 0);
-//    
-//    //從 CVImageBufferRef 取得影像的細部資訊
-//    uint8_t *base;
-//    size_t width, height, bytesPerRow;
-//    base = CVPixelBufferGetBaseAddress(buffer);
-//    width = CVPixelBufferGetWidth(buffer);
-//    height = CVPixelBufferGetHeight(buffer);
-//    bytesPerRow = CVPixelBufferGetBytesPerRow(buffer);
-//    
-//    //利用取得影像細部資訊格式化 CGContextRef
-//    CGColorSpaceRef colorSpace;
-//    CGContextRef cgContext;
-//    colorSpace = CGColorSpaceCreateDeviceRGB();
-//    cgContext = CGBitmapContextCreate (base, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-//
-//    CGColorSpaceRelease(colorSpace);
-//    
-//    //透過 CGImageRef 將 CGContextRef 轉換成 UIImage
-//    CGImageRef cgImage;
-//    UIImage *image;
-//    cgImage = CGBitmapContextCreateImage(cgContext);
-//    image = [UIImage imageWithCGImage:cgImage];
-//    CGImageRelease(cgImage);
-//    CGContextRelease(cgContext);
-//    
-//    CVPixelBufferUnlockBaseAddress(buffer, 0);
-//    
-////    NSString *fileName = [Utilities documentsPath:[NSString stringWithFormat:@"image%i.png",tmp]];
-////    tmp ++;
-////    [UIImagePNGRepresentation(image) writeToFile:fileName atomically:YES];
-////    NSError *error;
-////    NSFileManager *fileMgr = [NSFileManager defaultManager];
-////    NSLog(@"Documents directory: %@", [fileMgr contentsOfDirectoryAtPath:fileName error:&error]);
-//    
-//    //成功轉換成 UIImage
-////    self.imageView.image = [UIImage imageNamed:@"image3"];
-//    [self.imageView setImage:image];
-//    [self.imageView setNeedsDisplay];
-//}
-
 
 - (void) displayImage:(CVImageBufferRef)imageBuffer
 {
@@ -207,7 +161,7 @@
     [self.outputFrames addObject:imageBufferObject];
     [self.presentationTimes addObject:[NSNumber numberWithInteger:insertionIndex]];
     
-    NSLog(@"====== callback ====== %lu", (unsigned long)self.presentationTimes.count);
+//    NSLog(@"====== callback ====== %lu", (unsigned long)self.presentationTimes.count);
     
 //    id imageBufferObject = (__bridge id)imageBuffer;
 //    [self.outputFrames addObject:imageBufferObject];
@@ -237,41 +191,19 @@
             if (insertionIndex) {
                 [self.presentationTimes removeObjectAtIndex:0];
                 if ([self.presentationTimes count] == 3) {
-                    NSLog(@"====== start ======");
+//                    NSLog(@"====== start ======");
                     dispatch_semaphore_signal(self.bufferSemaphore);
                 }
             }
         }
         
         if (imageBuffer) {
-            NSLog(@"====== show ====== %lu", (unsigned long)self.presentationTimes.count);
+//            NSLog(@"====== show ====== %lu", (unsigned long)self.presentationTimes.count);
 //            [self displayPixelBuffer:imageBuffer];
             [self displayImage:imageBuffer];
         }
         
     }
-    
-    
-    /////////////////////////////////////////////////////////
-//    if (self.outputFrames.count >= 5) {
-//        id imageBufferObject = nil;
-//        CVImageBufferRef imageBuffer = NULL;
-//        @synchronized(self){
-//            imageBufferObject = [self.outputFrames firstObject];
-//            imageBuffer = (__bridge CVImageBufferRef)imageBufferObject;
-//        }
-//        @synchronized(self){
-//            if (imageBufferObject) {
-//                [self.outputFrames removeObjectAtIndex:0];
-//                if (self.outputFrames.count == 0) {
-//                     dispatch_semaphore_signal(self.bufferSemaphore);
-//                }
-//            }
-//        }
-//        if (imageBuffer) {
-//            [self displayPixelBuffer:imageBuffer];
-//        }
-//    }
 }
 
 - (void)displayPixelBuffer:(CVImageBufferRef)imageBuffer

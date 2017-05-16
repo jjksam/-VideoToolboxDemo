@@ -54,6 +54,7 @@ static int decode(AVCodecContext *avctx, AVFrame *frame, int *got_frame, AVPacke
     int is_avc;
     NSData *spsData;
     NSData *ppsData;
+    int audioStarted;
 }
 @property (nonatomic, retain) AudioStreamer *audioController;
 -(void)convertFrameToRGB;
@@ -530,7 +531,7 @@ initError:
     avpicture_free(&picture);
     
     // Free the packet that was allocated by av_read_frame
-    av_free_packet(&packet);
+    av_packet_unref(&packet);
     
     // Free the YUV frame
     av_frame_free(&pFrame);
@@ -831,6 +832,15 @@ initError:
             // ios8 HW decode
             [self iOS8HWDecode];
 #endif
+        } else if (packet.stream_index == audioStream) {
+            // decode audio
+            @synchronized(self) {
+                [audioPacketQueue addObject:[NSMutableData dataWithBytesNoCopy:&packet length:sizeof(packet) freeWhenDone:NO]];
+                if (audioPacketQueue.count > 3 && !audioStarted) {
+                    audioStarted = 1;
+                    [self startAudio];
+                }
+            }
         }
     }
     
