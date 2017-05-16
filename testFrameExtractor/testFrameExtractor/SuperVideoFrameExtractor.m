@@ -411,7 +411,7 @@ initError:
 
 -(void)setupScaler
 {
-    // release old pricture 和 scaler
+    // release old pricture and scaler
     avpicture_free(&picture);
     sws_freeContext(img_convert_ctx);
     
@@ -506,7 +506,7 @@ initError:
     av_free_packet(&packet);
     
     // Free the YUV frame
-    av_free(pFrame);
+    av_frame_free(&pFrame);
     
     // Close the codec
     if (pCodecCtx) avcodec_close(pCodecCtx);
@@ -774,7 +774,11 @@ initError:
     // AVPacket packet;
     int ret = 0; // success
     int frameFinished = 0;
+#if USE_FFMPEG_DECODE
     while (!ret && av_read_frame(pFormatCtx, &packet)>= 0) {
+#else
+    while (!ret && av_read_frame(pFormatCtx, &packet)>= 0) {
+#endif
         // 確認packet 是否是屬於此video stream
         if (packet.stream_index == videoStream) {
             
@@ -791,8 +795,10 @@ initError:
                 continue;
             // if ret == 0 ?
 #else
-            ret = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            int status = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 #endif
+            if (!pFrame->data[0]) continue;
+            sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, picture.data, picture.linesize);
             CGImageRef cgImageRef = [self imageFromAVPicture:picture width:outputWidth height:outputHeight].CGImage;
             if (cgImageRef != NULL) {
                 CVImageBufferRef pixelBuffer = [self pixelBufferFromCGImage:cgImageRef];
