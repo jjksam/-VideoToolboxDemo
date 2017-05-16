@@ -15,8 +15,35 @@
 #include "videotoolbox.h"
 
 #define RTSP_DUMP_DATA 1
-#define USE_NEW_API 0
+#define USE_NEW_API 1
 #define USE_FFMPEG_DECODE 1
+
+// This does not quite work like avcodec_decode_audio4/avcodec_decode_video2.
+// There is the following difference: if you got a frame, you must call
+// it again with pkt=NULL. pkt==NULL is treated differently from pkt.size==0
+// (pkt==NULL means get more output, pkt.size==0 is a flush/drain packet)
+static int decode(AVCodecContext *avctx, AVFrame *frame, int *got_frame, AVPacket *pkt)
+{
+    int ret;
+    
+    *got_frame = 0;
+    
+    if (pkt) {
+        ret = avcodec_send_packet(avctx, pkt);
+        // In particular, we don't expect AVERROR(EAGAIN), because we read all
+        // decoded frames with avcodec_receive_frame() until done.
+        if (ret < 0 && ret != AVERROR_EOF)
+            return ret;
+    }
+    
+    ret = avcodec_receive_frame(avctx, frame);
+    if (ret < 0 && ret != AVERROR(EAGAIN))
+        return ret;
+    if (ret >= 0)
+        *got_frame = 1;
+    
+    return 0;
+}
 
 @interface SuperVideoFrameExtractor ()
 {
@@ -416,7 +443,7 @@ initError:
     sws_freeContext(img_convert_ctx);
     
     // Allocate RGB picture
-    avpicture_alloc(&picture, AV_PIX_FMT_RGB24, outputWidth, outputHeight);
+    avpicture_alloc(&picture, AV_PIX_FMT_RGB32, outputWidth, outputHeight);
     
     // 建立scaler
     static int sws_flags =  SWS_FAST_BILINEAR;
@@ -425,7 +452,7 @@ initError:
                                      pCodecCtx->pix_fmt,
                                      outputWidth,
                                      outputHeight,
-                                     AV_PIX_FMT_RGB24,
+                                     AV_PIX_FMT_RGB32,
                                      sws_flags, NULL, NULL, NULL);
 }
 
@@ -443,7 +470,7 @@ initError:
     CGImageRef cgImage = CGImageCreate(width,
                                        height,
                                        8,
-                                       24,
+                                       32,
                                        pict.linesize[0],
                                        colorSpace,
                                        bitmapInfo,
@@ -767,7 +794,6 @@ initError:
 #endif
 }
 
-
 // 判斷在video stream中是否還有下一個fram可以讀取，回傳false，表示影片已經播放完畢
 -(BOOL)stepFrame
 {
@@ -787,13 +813,9 @@ initError:
 #if USE_FFMPEG_DECODE
             // FFMPEG decode
 #if USE_NEW_API
-            ret = avcodec_send_packet(pCodecCtx, &packet);
-            if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
-                continue;
-            ret = avcodec_receive_frame(pCodecCtx, pFrame);
-            if (ret < 0 && ret != AVERROR_EOF)
-                continue;
             // if ret == 0 ?
+            int got_frame = 0;
+            int status = decode(pCodecCtx, pFrame, &got_frame, &packet);
 #else
             int status = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 #endif
