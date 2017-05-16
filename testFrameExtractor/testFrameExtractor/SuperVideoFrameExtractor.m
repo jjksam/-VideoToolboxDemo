@@ -652,11 +652,11 @@ initError:
             session = avVideotoolBox->session;
         }
 
-        int32_t timeSpan = 90000;
-        CMSampleTimingInfo timingInfo;
-        timingInfo.presentationTimeStamp = CMTimeMake(0, timeSpan);
-        timingInfo.duration =  CMTimeMake(3000, timeSpan);
-        timingInfo.decodeTimeStamp = kCMTimeInvalid;
+//        int32_t timeSpan = 90000;
+//        CMSampleTimingInfo timingInfo;
+//        timingInfo.presentationTimeStamp = CMTimeMake(0, timeSpan);
+//        timingInfo.duration =  CMTimeMake(3000, timeSpan);
+//        timingInfo.decodeTimeStamp = kCMTimeInvalid;
         return; // skip
     }
     
@@ -707,13 +707,13 @@ initError:
         // 6. create a CMSampleBuffer.
         CMSampleBufferRef sbRef = NULL;
         AVRational timeBase = pFormatCtx->streams[videoStream]->time_base;
-        double currentTime =  packet.pts * (double)timeBase.num / timeBase.den;
-        CMSampleTimingInfo timingInfo = {packet.duration, packet.pts, packet.dts};
-//        int32_t timeSpan = 90000;
-//        CMSampleTimingInfo timingInfo;
-//        timingInfo.presentationTimeStamp = CMTimeMake(0, timeSpan);
-//        timingInfo.duration =  CMTimeMake(3000, timeSpan);
-//        timingInfo.decodeTimeStamp = kCMTimeInvalid;
+//        double currentTime =  packet.pts * (double)timeBase.num / timeBase.den;
+//        CMSampleTimingInfo timingInfo = {packet.duration, packet.pts, packet.dts};
+        int32_t timeSpan = timeBase.den;
+        CMSampleTimingInfo timingInfo;
+        timingInfo.presentationTimeStamp = CMTimeMake(packet.pts * (double)timeBase.num, timeSpan);
+        timingInfo.duration =  CMTimeMake(packet.duration * (double)timeBase.num, timeSpan);
+        timingInfo.decodeTimeStamp = kCMTimeInvalid;
         const size_t sampleSizeArray[] = {packet.size};
         status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 1, &timingInfo, 1, sampleSizeArray, &sbRef);
 //        status = CMSampleBufferCreate(kCFAllocatorDefault, videoBlock, true, NULL, NULL, videoFormatDescr, 1, 0, NULL, 1, sampleSizeArray, &sbRef);
@@ -791,7 +791,7 @@ initError:
                 continue;
             // if ret == 0 ?
 #else
-            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            ret = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 #endif
             CGImageRef cgImageRef = [self imageFromAVPicture:picture width:outputWidth height:outputHeight].CGImage;
             if (cgImageRef != NULL) {
